@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tradly Agency</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#1DA8C8;--gold2:#40E0C0;
+  --bg:#0A0F1A;--card:#0D1525;--border:#1A2640;
+  --text:#E8F4F8;--muted:#5A7A8A;--radius:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans','Tajawal',sans-serif;line-height:1.6;overflow-x:hidden}
+/* Modal overlay */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s ease}
+.modal-box{background:#0D1525;border:1px solid #1A2640;border-radius:20px;padding:40px;width:100%;max-width:480px;position:relative;animation:slideUp .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 0 0 rgba(29,168,200,0.3)}50%{box-shadow:0 0 0 12px rgba(29,168,200,0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-2%,-3%)}30%{transform:translate(3%,-1%)}50%{transform:translate(-1%,2%)}70%{transform:translate(2%,3%)}90%{transform:translate(-3%,1%)}}
+.fade-in{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.fade-in-delay-1{transition-delay:.1s}.fade-in-delay-2{transition-delay:.2s}
+.fade-in-delay-3{transition-delay:.3s}.fade-in-delay-4{transition-delay:.4s}
+.grain-overlay::after{content:'';position:fixed;inset:-100%;width:300%;height:300%;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;animation:grain 8s steps(10) infinite;z-index:9999;opacity:0.4}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;font-weight:700;padding:14px 32px;border-radius:50px;border:none;cursor:pointer;font-size:15px;font-family:'Syne','Tajawal',sans-serif;letter-spacing:.02em;transition:all .3s ease;animation:pulseGold 3s infinite;text-decoration:none;display:inline-block}
+.btn-gold:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 40px rgba(29,168,200,0.4)}
+.btn-outline{background:transparent;color:var(--gold);border:1.5px solid var(--gold);padding:13px 32px;border-radius:50px;cursor:pointer;font-size:15px;font-family:'Syne','Tajawal',sans-serif;font-weight:600;letter-spacing:.02em;transition:all .3s ease;text-decoration:none;display:inline-block}
+.btn-outline:hover{background:rgba(29,168,200,0.08);transform:translateY(-2px)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:all .4s ease;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(29,168,200,0.04),transparent);opacity:0;transition:opacity .4s}
+.card:hover::before{opacity:1}
+.card:hover{border-color:rgba(29,168,200,0.3);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.5)}
+.section-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(29,168,200,0.08);border:1px solid rgba(29,168,200,0.2);color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:24px;font-family:'Syne','Tajawal',sans-serif}
+.heading-xl{font-family:'Syne','Tajawal',sans-serif;font-size:clamp(32px,5vw,76px);font-weight:800;line-height:1.05;letter-spacing:-.02em;color:var(--text)}
+.heading-lg{font-family:'Syne','Tajawal',sans-serif;font-size:clamp(24px,3.5vw,48px);font-weight:700;line-height:1.1;letter-spacing:-.01em}
+.gold-text{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.divider-line{width:60px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:20px 0}
+[dir="rtl"] .divider-line{background:linear-gradient(270deg,var(--gold),transparent)}
+input,textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:14px 18px;font-size:15px;font-family:'DM Sans','Tajawal',sans-serif;width:100%;transition:border .3s;outline:none}
+input:focus,textarea:focus{border-color:rgba(29,168,200,0.5)}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+textarea{min-height:120px;resize:vertical}
+label{font-size:13px;color:var(--muted);margin-bottom:6px;display:block;font-weight:500}
+.nav-link{color:rgba(232,244,248,0.6);text-decoration:none;font-size:14px;font-weight:500;cursor:pointer;transition:color .2s;padding:4px 0}
+.nav-link:hover,.nav-link.active{color:var(--text)}
+/* Grid */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+@media(max-width:1024px){.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .hide-mobile{display:none!important}
+  .section{padding:64px 0!important}
+  .heading-xl{font-size:clamp(28px,8vw,42px)!important}
+  .process-connector{display:none!important}
+  .mobile-menu-btn{display:flex!important}
+}
+@media(max-width:480px){
+  .grid-4{grid-template-columns:1fr}
+  .btn-gold,.btn-outline{padding:12px 22px;font-size:14px}
+  .card{padding:20px}
+  .modal-box{padding:24px}
+}
+.section{padding:100px 0}
+.container{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,32px)}
+.text-center{text-align:center}
+.flex{display:flex}.items-center{align-items:center}
+.justify-center{justify-content:center}.justify-between{justify-content:space-between}
+.flex-col{flex-direction:column}.wrap{flex-wrap:wrap}.relative{position:relative}.overflow-hidden{overflow:hidden}
+.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
+.mb-48{margin-bottom:48px}.mb-64{margin-bottom:64px}
+/* WhatsApp */
+.whatsapp-widget{position:fixed;bottom:28px;right:28px;z-index:1000;width:54px;height:54px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 32px rgba(37,211,102,0.35);transition:transform .3s,box-shadow .3s;text-decoration:none}
+.whatsapp-widget:hover{transform:scale(1.1);box-shadow:0 12px 40px rgba(37,211,102,0.55)}
+[dir="rtl"] .whatsapp-widget{right:auto;left:28px}
+/* Hero */
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(29,168,200,0.10) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 80% 80%,rgba(64,224,192,0.05) 0%,transparent 60%)}
+.hero-grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(29,168,200,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(29,168,200,0.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,black 20%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse at center,black 20%,transparent 80%)}
+/* Process */
+.process-step{position:relative;text-align:center;padding:40px 16px}
+.process-num{font-family:'Syne',sans-serif;font-size:clamp(48px,7vw,72px);font-weight:800;color:rgba(29,168,200,0.08);line-height:1;position:absolute;top:0;left:50%;transform:translateX(-50%)}
+.process-icon{width:56px;height:56px;background:rgba(29,168,200,0.1);border:1px solid rgba(29,168,200,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:48px auto 20px;font-size:22px}
+.process-connector{position:absolute;top:76px;left:calc(50% + 28px);right:calc(-50% + 28px);height:1px;background:linear-gradient(90deg,rgba(29,168,200,0.3),rgba(29,168,200,0.05))}
+[dir="rtl"] .process-connector{background:linear-gradient(270deg,rgba(29,168,200,0.3),rgba(29,168,200,0.05))}
+/* Reviews */
+.review-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.review-stars{color:var(--gold);margin-bottom:12px;font-size:14px}
+.review-text{font-size:15px;line-height:1.7;margin-bottom:20px;color:rgba(232,244,248,0.8)}
+.review-author{font-size:13px;font-weight:600;color:var(--gold)}
+.stat-number{font-family:'Syne','Tajawal',sans-serif;font-size:clamp(36px,5vw,52px);font-weight:800;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+/* Lang toggle */
+.lang-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:50px;padding:6px 14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:all .3s}
+.lang-toggle:hover{border-color:rgba(29,168,200,0.3);background:rgba(29,168,200,0.06)}
+/* Page hero */
+.page-hero{padding:140px 0 80px;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(29,168,200,0.09) 0%,transparent 60%);text-align:center}
+@media(max-width:768px){.page-hero{padding:100px 0 60px}}
+/* Notification */
+.notification{position:fixed;top:90px;right:24px;background:rgba(29,168,200,0.15);border:1px solid rgba(29,168,200,0.3);color:var(--gold);padding:14px 24px;border-radius:12px;font-size:14px;font-weight:500;z-index:9998;animation:fadeSlideDown .4s ease}
+[dir="rtl"] .notification{right:auto;left:24px}
+/* Service detail */
+.service-detail-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .4s}
+.service-detail-card:hover{border-color:rgba(29,168,200,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.service-detail-header{padding:32px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(29,168,200,0.05),transparent)}
+.service-detail-body{padding:32px}
+.benefit-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px}
+.benefit-check{color:var(--gold);font-size:16px}
+/* Social SVG icons */
+.social-btn{display:flex;align-items:center;gap:10px;border-radius:10px;padding:12px 20px;text-decoration:none;color:var(--text);font-size:14px;font-weight:600;transition:all .3s;border:1px solid}
+.social-btn:hover{transform:translateY(-2px)}
+/* Team */
+.team-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center}
+.team-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(29,168,200,0.3),rgba(64,224,192,0.1));margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px;border:2px solid rgba(29,168,200,0.2)}
+/* Mobile menu */
+.mobile-menu-btn{display:none;background:none;border:none;color:var(--text);font-size:24px;cursor:pointer;padding:4px}
+@media(min-width:769px){.mobile-menu-btn{display:none!important}}
+/* Close btn */
+.close-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.06);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.close-btn:hover{background:rgba(255,255,255,0.12);color:var(--text)}
+[dir="rtl"] .close-btn{right:auto;left:16px}
+/* Sidebar */
+.sidebar-nav{display:flex;flex-direction:column;gap:4px}
+.sidebar-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;color:var(--muted);transition:all .2s;border:none;background:transparent;text-align:start;width:100%}
+.sidebar-item:hover{background:rgba(255,255,255,0.04);color:var(--text)}
+.sidebar-item.active{background:rgba(29,168,200,0.1);color:var(--gold)}
+.tab-bar{display:flex;gap:4px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:32px}
+.tab{flex:1;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;text-align:center;color:var(--muted);border:none;background:transparent}
+.tab.active{background:rgba(29,168,200,0.12);color:var(--gold)}
+.progress-bar-bg{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-top:8px}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;transition:width 1s ease}
+.status-badge{padding:4px 12px;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:.04em}
+.status-pending{background:rgba(255,193,7,0.12);color:#FFC107}
+.status-inProgress{background:rgba(33,150,243,0.12);color:#64B5F6}
+.status-completed{background:rgba(76,175,80,0.12);color:#81C784}
+.star-rating{display:flex;gap:4px;cursor:pointer}
+.star{font-size:24px;transition:transform .2s}.star:hover{transform:scale(1.2)}
+.star.filled{color:var(--gold)}.star.empty{color:#333}
+.map-placeholder{width:100%;height:180px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;margin-top:24px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, createContext, useContext } = React;
+const LangContext = createContext();
+
+const T = {
+  en: {
+    nav: { home:"Home", about:"About", services:"Services", contact:"Contact" },
+    hero: {
+      headline: "We don't do marketing.",
+      headline2: "We build growth systems.",
+      sub: "Helping businesses grow from zero to scaling — with strategy, systems, and relentless execution.",
+      cta1: "Start Your Project", cta2: "Book a Call",
+    },
+    modal: {
+      title: "Let's Get Started",
+      sub: "Fill in your details and we'll reach out within 24 hours.",
+      name: "Full Name", phone: "Phone Number", msg: "Your Message",
+      send: "Send Request", sending: "Sending...", sent: "✓ Message sent! We'll contact you soon.",
+      namePh: "Your full name", phonePh: "+20 1XX XXX XXXX", msgPh: "Tell us about your project...",
+    },
+    vision: {
+      title: "Our Philosophy",
+      sub: "We believe marketing is engineering. Every campaign is a hypothesis, every result is data.",
+      v1t:"Systems Over Tactics", v1d:"We build repeatable growth engines, not one-off campaigns.",
+      v2t:"Data Before Decisions", v2d:"Every strategy is grounded in real market signals, not guesswork.",
+      v3t:"Outcomes Over Outputs", v3d:"We measure what moves the needle — revenue, retention, reach.",
+    },
+    services: {
+      title:"What We Do", sub:"Four pillars of growth, engineered for your business.",
+      s1t:"Marketing Consultation", s1d:"Deep-dive strategy sessions that expose gaps and unlock your next growth phase.",
+      s2t:"Full Marketing Plan", s2d:"An end-to-end roadmap — from brand positioning to channel mix to content calendar.",
+      s3t:"Store & Social Analysis", s3d:"Forensic audit of your digital presence: what's working, what's leaking, what's next.",
+      s4t:"Marketing & Logistics Agents", s4d:"Embedded execution teams that run campaigns, manage vendors, and report weekly.",
+      learnMore:"Learn More →",
+    },
+    process: {
+      title:"How We Work", sub:"A battle-tested four-step system that turns ambition into results.",
+      steps:["Analyze","Build Strategy","Execute","Scale"],
+      descs:[
+        "We dissect your market, competition, and current performance.",
+        "We architect a custom growth blueprint aligned to your goals.",
+        "We deploy campaigns, content, and systems with precision.",
+        "We iterate relentlessly until growth becomes compounding.",
+      ],
+    },
+    reviews:{ title:"Client Stories", sub:"Real results from real businesses." },
+    cta:{ title:"Ready to Build Your Growth System?", sub:"Let's turn your ambition into a scalable marketing engine.", b1:"Book a Call", b2:"Start Your Project" },
+    about:{
+      title:"We Are Tradly", sub:"Born from a belief that most marketing agencies are noise factories. We are different.",
+      m1:"Mission", m1d:"To engineer growth systems that compound over time — turning businesses into market leaders.",
+      m2:"Vision", m2d:"A world where every ambitious founder has access to world-class growth infrastructure.",
+      story:"Tradly was founded by marketers who got tired of vanity metrics. We walked away from agencies chasing impressions and built something obsessed with outcomes. Today we serve clients across the GCC and beyond — from early-stage startups to scaling brands.",
+      s1:"Clients Helped", s2:"Projects Done", s3:"Avg. Revenue Growth", team:"Our Team",
+    },
+    servicesPage:{
+      title:"Our Services", sub:"Choose the growth lever that fits your stage.", cta:"Start This Service",
+      services:[
+        { title:"Marketing Consultation", desc:"A focused strategy engagement where we map your market, dissect your competition, and design your growth path.", benefits:["Market positioning clarity","Competitor gap analysis","Actionable 90-day roadmap","Executive-level insight"] },
+        { title:"Full Marketing Plan", desc:"Your complete go-to-market playbook. Brand, channels, content, budget allocation, and KPIs — all in one system.", benefits:["Brand architecture","Multi-channel strategy","Content calendar & scripts","Budget modeling & ROI projections"] },
+        { title:"Store & Social Analysis", desc:"A forensic audit of your online presence. We find the leaks, the wins, and the untapped opportunities.", benefits:["E-commerce conversion audit","Social account health report","SEO & content gap analysis","Priority fix roadmap"] },
+        { title:"Marketing & Logistics Agents", desc:"Embedded execution partners who run your campaigns, manage your supply chain, and deliver weekly reports.", benefits:["Dedicated campaign managers","Logistics coordination","Weekly KPI reporting","Continuous optimization"] },
+      ],
+    },
+    contact:{ title:"Let's Build Something", sub:"Drop us a message and we'll respond within 24 hours.", name:"Full Name", email:"Email Address", msg:"Your Message", send:"Send Message", or:"Or reach us directly", whatsapp:"Chat on WhatsApp" },
+    footer:{ tagline:"Engineering growth, one system at a time.", rights:"All rights reserved." },
+  },
+  ar: {
+    nav: { home:"الرئيسية", about:"عن ترادلي", services:"الخدمات", contact:"تواصل معنا" },
+    hero: {
+      headline: "لا نقدم خدمات تسويق.",
+      headline2: "نبني أنظمة نمو.",
+      sub: "نساعد الشركات على النمو من الصفر إلى الانطلاق — باستراتيجية وأنظمة وتنفيذ لا يتوقف.",
+      cta1:"ابدأ مشروعك", cta2:"احجز مكالمة",
+    },
+    modal: {
+      title:"لنبدأ معاً",
+      sub:"أدخل بياناتك وسنتواصل معك خلال 24 ساعة.",
+      name:"الاسم الكامل", phone:"رقم الهاتف", msg:"رسالتك",
+      send:"إرسال الطلب", sending:"جاري الإرسال...", sent:"✓ تم الإرسال! سنتواصل معك قريباً.",
+      namePh:"اسمك الكامل", phonePh:"+20 1XX XXX XXXX", msgPh:"أخبرنا عن مشروعك...",
+    },
+    vision:{
+      title:"فلسفتنا", sub:"نؤمن بأن التسويق هندسة. كل حملة فرضية، وكل نتيجة بيانات.",
+      v1t:"أنظمة لا تكتيكات", v1d:"نبني محركات نمو قابلة للتكرار، لا حملات آنية.",
+      v2t:"البيانات أولاً", v2d:"كل استراتيجية مبنية على إشارات سوقية حقيقية، لا تخمينات.",
+      v3t:"النتائج لا المخرجات", v3d:"نقيس ما يُحرّك الإبرة — الإيرادات والاحتفاظ والوصول.",
+    },
+    services:{
+      title:"ماذا نفعل", sub:"أربعة محاور للنمو، مصممة لعملك.",
+      s1t:"استشارة تسويقية", s1d:"جلسات استراتيجية معمّقة تكشف الثغرات وتفتح مرحلة النمو التالية.",
+      s2t:"خطة تسويقية متكاملة", s2d:"خارطة طريق شاملة — من تحديد المكانة التنافسية إلى مزيج القنوات والجدول التحريري.",
+      s3t:"تحليل المتجر والسوشيال", s3d:"تدقيق جنائي لحضورك الرقمي: ما يعمل، ما يتسرب، ما هو التالي.",
+      s4t:"وكلاء تسويق ولوجستيات", s4d:"فرق تنفيذية مدمجة تدير الحملات والموردين وتقدم تقارير أسبوعية.",
+      learnMore:"اعرف أكثر →",
+    },
+    process:{
+      title:"كيف نعمل", sub:"نظام رباعي الخطوات مُختبر يحول الطموح إلى نتائج.",
+      steps:["تحليل","بناء الاستراتيجية","التنفيذ","التوسع"],
+      descs:["نشرّح سوقك ومنافسيك وأداءك الحالي.","نصمم مخططاً مخصصاً للنمو يتوافق مع أهدافك.","ننشر الحملات والمحتوى والأنظمة بدقة عالية.","نكرر باستمرار حتى يصبح النمو متراكماً."],
+    },
+    reviews:{ title:"قصص العملاء", sub:"نتائج حقيقية من شركات حقيقية." },
+    cta:{ title:"هل أنت مستعد لبناء نظام نموك؟", sub:"دعنا نحوّل طموحك إلى محرك تسويقي قابل للتوسع.", b1:"احجز مكالمة", b2:"ابدأ مشروعك" },
+    about:{
+      title:"نحن ترادلي", sub:"وُلدنا من الاعتقاد بأن معظم وكالات التسويق مصانع ضوضاء. نحن مختلفون.",
+      m1:"المهمة", m1d:"هندسة أنظمة نمو تتراكم مع الوقت — لتحويل الشركات إلى قادة في السوق.",
+      m2:"الرؤية", m2d:"عالم يتمتع فيه كل مؤسس طموح بالوصول إلى بنية تحتية للنمو على مستوى عالمي.",
+      story:"تأسست ترادلي على يد مسوّقين سئموا من مقاييس الغرور. ابتعدنا عن الوكالات التي تطارد الانطباعات وبنينا شيئاً مهووساً بالنتائج. اليوم نخدم عملاء في منطقة الخليج وخارجها — من الشركات الناشئة إلى العلامات التجارية المتوسعة.",
+      s1:"عميل مستفيد", s2:"مشروع مكتمل", s3:"متوسط نمو الإيرادات", team:"فريقنا",
+    },
+    servicesPage:{
+      title:"خدماتنا", sub:"اختر رافعة النمو التي تناسب مرحلتك.", cta:"ابدأ هذه الخدمة",
+      services:[
+        { title:"استشارة تسويقية", desc:"تفاعل استراتيجي مركّز نرسم فيه سوقك ونشرّح منافسيك ونصمم مسار نموك.", benefits:["وضوح في التمركز التنافسي","تحليل فجوات المنافسين","خارطة طريق 90 يوماً قابلة للتنفيذ","رؤى على مستوى تنفيذي"] },
+        { title:"خطة تسويقية متكاملة", desc:"دليلك الشامل للنزول إلى السوق. العلامة التجارية والقنوات والمحتوى وتوزيع الميزانية — كل ذلك في منظومة واحدة.", benefits:["هندسة العلامة التجارية","استراتيجية متعددة القنوات","جدول المحتوى والسكريبتات","نمذجة الميزانية وتوقعات العائد"] },
+        { title:"تحليل المتجر والسوشيال", desc:"تدقيق جنائي لحضورك الرقمي. نجد التسريبات والانتصارات والفرص غير المستغلة.", benefits:["تدقيق تحويل التجارة الإلكترونية","تقرير صحة الحسابات الاجتماعية","تحليل فجوات السيو والمحتوى","خارطة طريق إصلاح الأولويات"] },
+        { title:"وكلاء تسويق ولوجستيات", desc:"شركاء تنفيذيون مدمجون يديرون حملاتك وسلسلة التوريد ويقدمون تقارير أسبوعية.", benefits:["مديرو حملات مخصصون","تنسيق اللوجستيات","تقارير أسبوعية للمؤشرات","تحسين مستمر"] },
+      ],
+    },
+    contact:{ title:"لنبني شيئاً معاً", sub:"أرسل لنا رسالة وسنرد خلال 24 ساعة.", name:"الاسم الكامل", email:"البريد الإلكتروني", msg:"رسالتك", send:"إرسال الرسالة", or:"أو تواصل معنا مباشرة", whatsapp:"تواصل عبر واتساب" },
+    footer:{ tagline:"هندسة النمو، نظاماً واحداً في كل مرة.", rights:"جميع الحقوق محفوظة." },
+  },
+};
+
+const GOLD="#1DA8C8", GOLD2="#40E0C0", BG="#0A0F1A", CARD="#0D1525", BORDER="#1A2640";
+const SERVICE_ICONS=["📊","🗺️","🔍","🤝"];
+const PROCESS_ICONS=["🔬","🏗️","🚀","📈"];
+
+function useInView(threshold=0.12){
+  const ref=useRef(null);
+  const [visible,setVisible]=useState(false);
+  useEffect(()=>{
+    const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting)setVisible(true)},{threshold});
+    if(ref.current)obs.observe(ref.current);
+    return()=>obs.disconnect();
+  },[]);
+  return[ref,visible];
+}
+
+// ── SVG LOGOS & ICONS ──────────────────────────
+const TCLogo=({id="tcG",size=38})=>(
+  <svg width={size} height={Math.round(size*0.86)} viewBox="0 0 42 36" fill="none">
+    <defs><linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#1DA8C8"/><stop offset="100%" stopColor="#40E0C0"/>
+    </linearGradient></defs>
+    <rect x="2" y="2" width="38" height="8" rx="4" fill={`url(#${id})`}/>
+    <rect x="10" y="2" width="8" height="30" rx="4" fill={`url(#${id})`}/>
+    <path d="M22 13 Q28 13 38 13 Q38 22 38 22 Q38 32 28 32 Q22 32 22 32" stroke={`url(#${id})`} strokeWidth="7" strokeLinecap="round" fill="none"/>
+  </svg>
+);
+
+const InstagramIcon=()=>(
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+  </svg>
+);
+
+const TikTokIcon=()=>(
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.22 8.22 0 004.84 1.56V6.79a4.85 4.85 0 01-1.07-.1z"/>
+  </svg>
+);
+
+const LinkedInIcon=()=>(
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>
+  </svg>
+);
+
+// ── CONTACT MODAL ──────────────────────────────
+function ContactModal({ lang, onClose }) {
+  const t = T[lang];
+  const m = t.modal;
+  const [form, setForm] = useState({ name:"", phone:"", msg:"" });
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+
+  const handleSend = async () => {
+    if (!form.name || !form.phone || !form.msg) return;
+    setStatus("sending");
+    try {
+      // Using mailto as fallback since no backend — opens email client
+      const subject = encodeURIComponent(`New Project Request from ${form.name}`);
+      const body = encodeURIComponent(
+        `Name: ${form.name}\nPhone: ${form.phone}\n\nMessage:\n${form.msg}`
+      );
+      window.location.href = `mailto:info.tradly@gmail.com?subject=${subject}&body=${body}`;
+      setStatus("sent");
+      setTimeout(() => { setStatus("idle"); setForm({name:"",phone:"",msg:""}); onClose(); }, 2500);
+    } catch(e) {
+      setStatus("error");
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
+      <div className="modal-box">
+        <button className="close-btn" onClick={onClose}>×</button>
+        <div style={{ textAlign:"center", marginBottom:28 }}>
+          <TCLogo id="tcModal" size={44}/>
+          <h2 style={{ fontFamily:"Syne,Tajawal,sans-serif", fontWeight:800, fontSize:22, marginTop:12 }}>{m.title}</h2>
+          <p style={{ color:"var(--muted)", fontSize:14, marginTop:6 }}>{m.sub}</p>
+        </div>
+        {status==="sent" ? (
+          <div style={{ textAlign:"center", padding:"24px 0", color:GOLD2, fontFamily:"Syne,Tajawal,sans-serif", fontWeight:600, fontSize:16 }}>{m.sent}</div>
+        ) : (
+          <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+            <div>
+              <label>{m.name}</label>
+              <input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder={m.namePh}/>
+            </div>
+            <div>
+              <label>{m.phone}</label>
+              <input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} placeholder={m.phonePh} type="tel"/>
+            </div>
+            <div>
+              <label>{m.msg}</label>
+              <textarea value={form.msg} onChange={e=>setForm({...form,msg:e.target.value})} placeholder={m.msgPh}/>
+            </div>
+            <button
+              className="btn-gold"
+              onClick={handleSend}
+              disabled={status==="sending"}
+              style={{ width:"100%", marginTop:4, opacity:status==="sending"?0.7:1 }}
+            >
+              {status==="sending" ? m.sending : m.send}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── NAVBAR ─────────────────────────────────────
+function Navbar({ page, setPage, lang, setLang, onCTA }) {
+  const t = T[lang];
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => {
+    const fn=()=>setScrolled(window.scrollY>30);
+    window.addEventListener("scroll",fn);
+    return()=>window.removeEventListener("scroll",fn);
+  }, []);
+  const links=[["home",t.nav.home],["about",t.nav.about],["services",t.nav.services],["contact",t.nav.contact]];
+  return (
+    <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:100, background:scrolled?"rgba(10,15,26,0.95)":"transparent", backdropFilter:scrolled?"blur(20px)":"none", borderBottom:scrolled?`1px solid ${BORDER}`:"1px solid transparent", transition:"all .4s", animation:"fadeSlideDown .6s ease" }}>
+      <div className="container flex items-center justify-between" style={{ padding:"16px 0" }}>
+        {/* Logo */}
+        <div onClick={()=>{setPage("home");setMobileOpen(false);}} style={{ cursor:"pointer", display:"flex", alignItems:"center", gap:10 }}>
+          <TCLogo id="tcNav" size={36}/>
+          <span style={{ fontFamily:"Syne,Tajawal,sans-serif", fontWeight:800, fontSize:20, letterSpacing:-0.5, background:"linear-gradient(135deg,#1DA8C8,#40E0C0)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>Tradly</span>
+        </div>
+        {/* Desktop links */}
+        <div className="flex items-center hide-mobile" style={{ gap:32 }}>
+          {links.map(([key,label])=>(
+            <span key={key} className={`nav-link ${page===key?"active":""}`} onClick={()=>setPage(key)} style={{ color:page===key?"var(--text)":undefined }}>{label}</span>
+          ))}
+        </div>
+        {/* Right */}
+        <div className="flex items-center" style={{ gap:10 }}>
+          <button className="lang-toggle" onClick={()=>setLang(lang==="en"?"ar":"en")}>
+            🌐 {lang==="en"?"العربية":"English"}
+          </button>
+          <button className="btn-gold hide-mobile" style={{ padding:"10px 22px", fontSize:13 }} onClick={onCTA}>{t.hero.cta1}</button>
+          <button className="mobile-menu-btn" onClick={()=>setMobileOpen(!mobileOpen)}>
+            {mobileOpen?"✕":"☰"}
+          </button>
+        </div>
+      </div>
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div style={{ background:"rgba(10,15,26,0.98)", borderTop:`1px solid ${BORDER}`, padding:"16px 0" }}>
+          <div className="container" style={{ display:"flex", flexDirection:"column", gap:0 }}>
+            {links.map(([key,label])=>(
+              <div key={key} style={{ padding:"14px 0", borderBottom:`1px solid ${BORDER}` }} onClick={()=>{setPage(key);setMobileOpen(false);}}>
+                <span className="nav-link" style={{ fontSize:16 }}>{label}</span>
+              </div>
+            ))}
+            <div style={{ paddingTop:16 }}>
+              <button className="btn-gold" style={{ width:"100%" }} onClick={()=>{onCTA();setMobileOpen(false);}}>{t.hero.cta1}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+}
+
+// ── HERO ───────────────────────────────────────
+function Hero({ lang, onCTA }) {
+  const t = T[lang];
+  const [ref,visible] = useInView(0.05);
+  return (
+    <section style={{ position:"relative", minHeight:"100vh", display:"flex", alignItems:"center", overflow:"hidden" }}>
+
+      {/* ── Video Background ── */}
+      <video
+        autoPlay muted loop playsInline
+        style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", zIndex:0 }}
+      >
+        <source src="top.mp4" type="video/mp4"/>
+      </video>
+
+      {/* ── Dark overlay so text is readable ── */}
+      <div style={{ position:"absolute", inset:0, zIndex:1,
+        background:"linear-gradient(135deg, rgba(10,15,26,0.82) 0%, rgba(10,15,26,0.60) 50%, rgba(10,15,26,0.75) 100%)"
+      }}/>
+
+      {/* ── Teal gradient accent on top of overlay ── */}
+      <div style={{ position:"absolute", inset:0, zIndex:2,
+        background:"radial-gradient(ellipse 70% 50% at 20% 50%, rgba(29,168,200,0.12) 0%, transparent 70%)"
+      }}/>
+
+      {/* ── Content ── */}
+      <div className="container" ref={ref} style={{ position:"relative", zIndex:3, paddingTop:100, paddingBottom:80 }}>
+        <div style={{ maxWidth:780 }}>
+          <div className={`fade-in ${visible?"visible":""}`} style={{ marginBottom:24 }}>
+            <span className="section-tag">✦ Tradly Agency</span>
+          </div>
+          <h1 className={`heading-xl fade-in ${visible?"visible":""} fade-in-delay-1`} style={{ marginBottom:8 }}>{t.hero.headline}</h1>
+          <h1 className={`heading-xl gold-text fade-in ${visible?"visible":""} fade-in-delay-2`} style={{ marginBottom:28 }}>{t.hero.headline2}</h1>
+          <p className={`fade-in ${visible?"visible":""} fade-in-delay-3`} style={{ fontSize:"clamp(15px,2vw,19px)", color:"rgba(232,244,248,0.80)", maxWidth:560, marginBottom:44, lineHeight:1.8 }}>{t.hero.sub}</p>
+          <div className={`flex wrap fade-in ${visible?"visible":""} fade-in-delay-4`} style={{ gap:14 }}>
+            <button className="btn-gold" onClick={onCTA}>{t.hero.cta1}</button>
+            <button className="btn-outline" onClick={onCTA}>{t.hero.cta2}</button>
+          </div>
+          <div className={`flex wrap fade-in ${visible?"visible":""}`} style={{ gap:40, marginTop:72, transitionDelay:"0.5s" }}>
+            {[["50+",lang==="ar"?"عميل":"Clients"],["100+",lang==="ar"?"مشروع":"Projects"],["3x",lang==="ar"?"متوسط النمو":"Avg Growth"]].map(([n,l])=>(
+              <div key={l}>
+                <div style={{ fontFamily:"Syne,Tajawal,sans-serif", fontSize:"clamp(24px,4vw,34px)", fontWeight:800, color:GOLD }}>{n}</div>
+                <div style={{ fontSize:13, color:"rgba(232,244,248,0.6)", marginTop:2 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Scroll indicator ── */}
+      <div style={{ position:"absolute", bottom:32, left:"50%", transform:"translateX(-50%)", zIndex:3,
+        display:"flex", flexDirection:"column", alignItems:"center", gap:6,
+        color:"rgba(232,244,248,0.5)", fontSize:11, letterSpacing:2, animation:"float 2s ease-in-out infinite"
+      }}>
+        <span>{lang==="ar"?"اسحب للأسفل":"SCROLL"}</span>
+        <span>↓</span>
+      </div>
+    </section>
+  );
+}
+
+function clamp(min,max){ return `clamp(${min}px,${Math.round((min+max)/2/16)}vw,${max}px)`; }
+
+// ── VISION ─────────────────────────────────────
+function Vision({ lang }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  const items=[{icon:"⚡",title:t.vision.v1t,desc:t.vision.v1d},{icon:"📡",title:t.vision.v2t,desc:t.vision.v2d},{icon:"🎯",title:t.vision.v3t,desc:t.vision.v3d}];
+  return (
+    <section className="section" ref={ref} style={{ background:"linear-gradient(180deg,transparent,rgba(29,168,200,0.02),transparent)" }}>
+      <div className="container">
+        <div className={`text-center mb-64 fade-in ${visible?"visible":""}`}>
+          <span className="section-tag">✦ {lang==="ar"?"من نحن":"Our DNA"}</span>
+          <h2 className="heading-lg" style={{ marginBottom:14 }}>{t.vision.title}</h2>
+          <p style={{ color:"var(--muted)", maxWidth:520, margin:"0 auto", fontSize:16, lineHeight:1.7 }}>{t.vision.sub}</p>
+        </div>
+        <div className="grid-3">
+          {items.map((item,i)=>(
+            <div key={i} className={`card fade-in fade-in-delay-${i+1} ${visible?"visible":""}`} style={{ textAlign:"center" }}>
+              <div style={{ width:60, height:60, borderRadius:"50%", background:"rgba(29,168,200,0.08)", border:"1px solid rgba(29,168,200,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, margin:"0 auto 18px" }}>{item.icon}</div>
+              <h3 style={{ fontFamily:"Syne,Tajawal,sans-serif", fontSize:17, fontWeight:700, marginBottom:8 }}>{item.title}</h3>
+              <p style={{ color:"var(--muted)", fontSize:14, lineHeight:1.7 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── SERVICES HOME ──────────────────────────────
+function ServicesHome({ setPage, lang, onCTA }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  const cards=[{icon:SERVICE_ICONS[0],title:t.services.s1t,desc:t.services.s1d},{icon:SERVICE_ICONS[1],title:t.services.s2t,desc:t.services.s2d},{icon:SERVICE_ICONS[2],title:t.services.s3t,desc:t.services.s3d},{icon:SERVICE_ICONS[3],title:t.services.s4t,desc:t.services.s4d}];
+  return (
+    <section className="section" ref={ref}>
+      <div className="container">
+        <div className={`text-center mb-64 fade-in ${visible?"visible":""}`}>
+          <span className="section-tag">✦ {lang==="ar"?"خدماتنا":"Services"}</span>
+          <h2 className="heading-lg" style={{ marginBottom:14 }}>{t.services.title}</h2>
+          <p style={{ color:"var(--muted)", maxWidth:460, margin:"0 auto", fontSize:16 }}>{t.services.sub}</p>
+        </div>
+        <div className="grid-4">
+          {cards.map((c,i)=>(
+            <div key={i} className={`card fade-in fade-in-delay-${i%4+1} ${visible?"visible":""}`}>
+              <div style={{ fontSize:32, marginBottom:16 }}>{c.icon}</div>
+              <h3 style={{ fontFamily:"Syne,Tajawal,sans-serif", fontSize:16, fontWeight:700, marginBottom:8 }}>{c.title}</h3>
+              <p style={{ color:"var(--muted)", fontSize:13, lineHeight:1.7, marginBottom:18 }}>{c.desc}</p>
+              <button className="btn-outline" style={{ fontSize:13, padding:"8px 16px" }} onClick={()=>setPage("services")}>{t.services.learnMore}</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── PROCESS ────────────────────────────────────
+function Process({ lang }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  return (
+    <section className="section" ref={ref} style={{ background:"rgba(29,168,200,0.02)" }}>
+      <div className="container">
+        <div className={`text-center mb-64 fade-in ${visible?"visible":""}`}>
+          <span className="section-tag">✦ {lang==="ar"?"المنهجية":"Methodology"}</span>
+          <h2 className="heading-lg" style={{ marginBottom:14 }}>{t.process.title}</h2>
+          <p style={{ color:"var(--muted)", maxWidth:460, margin:"0 auto", fontSize:16 }}>{t.process.sub}</p>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:0, position:"relative" }}>
+          {t.process.steps.map((step,i)=>(
+            <div key={i} className={`process-step fade-in fade-in-delay-${i+1} ${visible?"visible":""}`}>
+            
+              {i<3&&<div className="process-connector"/>}
+              <div className="process-icon">{PROCESS_ICONS[i]}</div>
+              <h3 style={{ fontFamily:"Syne,Tajawal,sans-serif", fontWeight:700, fontSize:15, marginBottom:8, color:GOLD }}>{step}</h3>
+              <p style={{ color:"var(--muted)", fontSize:13, lineHeight:1.7 }}>{t.process.descs[i]}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <style>{`@media(max-width:768px){.process-step{padding:32px 12px}.process-grid-inner{grid-template-columns:repeat(2,1fr)!important}}`}</style>
+    </section>
+  );
+}
+
+// ── REVIEWS ────────────────────────────────────
+function Reviews({ lang, reviews }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  const defaultReviews=[
+    {name:"Ahmed Al-Rashidi",rating:5,text:lang==="ar"?"ترادلي غيّرت مسار شركتنا تماماً. ثلاثة أضعاف الإيرادات في ستة أشهر.":"Tradly completely changed our trajectory. 3x revenue in six months."},
+    {name:"Sara M.",rating:5,text:lang==="ar"?"نظام تسويقي حقيقي وليس مجرد حملات. الفرق واضح.":"A real marketing system, not just campaigns. The difference is undeniable."},
+    {name:"Khalid B.",rating:5,text:lang==="ar"?"فريق ترادلي يعمل كجزء من فريقك الداخلي.":"The Tradly team works like an internal extension of your own team."},
+  ];
+  const all=[...defaultReviews,...reviews];
+  return (
+    <section className="section" ref={ref}>
+      <div className="container">
+        <div className={`text-center mb-64 fade-in ${visible?"visible":""}`}>
+          <span className="section-tag">✦ {lang==="ar"?"التقييمات":"Reviews"}</span>
+          <h2 className="heading-lg" style={{ marginBottom:14 }}>{t.reviews.title}</h2>
+          <p style={{ color:"var(--muted)", maxWidth:460, margin:"0 auto", fontSize:16 }}>{t.reviews.sub}</p>
+        </div>
+        <div className="grid-3">
+          {all.map((r,i)=>(
+            <div key={i} className={`review-card fade-in fade-in-delay-${(i%3)+1} ${visible?"visible":""}`}>
+              <div className="review-stars">{"★".repeat(r.rating)}{"☆".repeat(5-r.rating)}</div>
+              <p className="review-text">"{r.text}"</p>
+              <div className="review-author">— {r.name}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── FINAL CTA ──────────────────────────────────
+function FinalCTA({ lang, onCTA }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  return (
+    <section className="section" ref={ref}>
+      <div className="container">
+        <div className={`fade-in ${visible?"visible":""}`} style={{ background:"linear-gradient(135deg,rgba(29,168,200,0.08),rgba(29,168,200,0.03))", border:"1px solid rgba(29,168,200,0.2)", borderRadius:24, padding:"clamp(40px,6vw,80px) clamp(24px,6vw,60px)", textAlign:"center", position:"relative", overflow:"hidden" }}>
+          <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 60% 60% at 50% 100%,rgba(29,168,200,0.05),transparent)", pointerEvents:"none" }}/>
+          <span className="section-tag">✦ {lang==="ar"?"ابدأ الآن":"Get Started"}</span>
+          <h2 className="heading-lg" style={{ marginBottom:14 }}>{t.cta.title}</h2>
+          <p style={{ color:"var(--muted)", fontSize:"clamp(15px,2vw,18px)", marginBottom:40, maxWidth:480, margin:"0 auto 40px" }}>{t.cta.sub}</p>
+          <div className="flex justify-center wrap" style={{ gap:14 }}>
+            <button className="btn-gold" onClick={onCTA}>{t.cta.b1}</button>
+            <button className="btn-outline" onClick={onCTA}>{t.cta.b2}</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── HOME PAGE ──────────────────────────────────
+function HomePage({ setPage, lang, reviews, onCTA }) {
+  return (
+    <>
+      <Hero lang={lang} onCTA={onCTA}/>
+      <Vision lang={lang}/>
+      <ServicesHome setPage={setPage} lang={lang} onCTA={onCTA}/>
+      <Process lang={lang}/>
+      <Reviews lang={lang} reviews={reviews}/>
+      <FinalCTA lang={lang} onCTA={onCTA}/>
+    </>
+  );
+}
+
+// ── ABOUT PAGE ─────────────────────────────────
+function AboutPage({ lang, onCTA }) {
+  const t = T[lang];
+  const [ref1,v1]=useInView(),[ref2,v2]=useInView(),[ref3,v3]=useInView();
+  const team=[
+    {emoji:"👨‍💼",name:lang==="ar"?"محمد العتيبي":"Mohammed Al-Otaibi",role:lang==="ar"?"المؤسس والرئيس التنفيذي":"Founder & CEO"},
+    {emoji:"👩‍💻",name:lang==="ar"?"سارة الحارثي":"Sara Al-Harthi",role:lang==="ar"?"مديرة الاستراتيجية":"Head of Strategy"},
+    {emoji:"👨‍🎨",name:lang==="ar"?"عمر الشمري":"Omar Al-Shammari",role:lang==="ar"?"مدير الإبداع":"Creative Director"},
+  ];
+  return (
+    <>
+      <section className="page-hero">
+        <div className="container">
+          <span className="section-tag">✦ {lang==="ar"?"من نحن":"About Us"}</span>
+          <h1 className="heading-xl" style={{ marginBottom:16 }}>{t.about.title}</h1>
+          <p style={{ color:"var(--muted)", fontSize:"clamp(15px,2vw,19px)", maxWidth:580, margin:"0 auto" }}>{t.about.sub}</p>
+        </div>
+      </section>
+      <section className="section" ref={ref1}>
+        <div className="container">
+          <div className="grid-2" style={{ gap:40, alignItems:"start" }}>
+            <div className={`fade-in ${v1?"visible":""}`}>
+              <div style={{ fontSize:44, marginBottom:14 }}>🎯</div>
+              <h3 className="heading-lg" style={{ fontSize:"clamp(22px,3vw,30px)", marginBottom:12 }}>{t.about.m1}</h3>
+              <div className="divider-line"/>
+              <p style={{ color:"var(--muted)", lineHeight:1.8, fontSize:15 }}>{t.about.m1d}</p>
+            </div>
+            <div className={`fade-in fade-in-delay-2 ${v1?"visible":""}`}>
+              <div style={{ fontSize:44, marginBottom:14 }}>🔭</div>
+              <h3 className="heading-lg" style={{ fontSize:"clamp(22px,3vw,30px)", marginBottom:12 }}>{t.about.m2}</h3>
+              <div className="divider-line"/>
+              <p style={{ color:"var(--muted)", lineHeight:1.8, fontSize:15 }}>{t.about.m2d}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="section" ref={ref2} style={{ background:"rgba(29,168,200,0.02)" }}>
+        <div className="container">
+          <div className={`fade-in ${v2?"visible":""}`} style={{ background:"var(--card)", border:`1px solid ${BORDER}`, borderRadius:20, padding:"clamp(24px,4vw,48px)", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:-20, fontSize:120, opacity:0.03, fontFamily:"serif", lineHeight:1 }}>"</div>
+            <span className="section-tag">✦ {lang==="ar"?"قصتنا":"Our Story"}</span>
+            <p style={{ fontSize:"clamp(15px,1.8vw,18px)", lineHeight:1.9, color:"rgba(232,244,248,0.8)", maxWidth:700 }}>{t.about.story}</p>
+          </div>
+        </div>
+      </section>
+      <section className="section" ref={ref3}>
+        <div className="container">
+          <div className="grid-3" style={{ marginBottom:72 }}>
+            {[["+50",t.about.s1],["+100",t.about.s2],["3x",t.about.s3]].map(([n,l],i)=>(
+              <div key={i} className={`card fade-in fade-in-delay-${i+1} ${v3?"visible":""}`} style={{ textAlign:"center" }}>
+                <div className="stat-number">{n}</div>
+                <div style={{ color:"var(--muted)", fontSize:14, marginTop:8 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+          <div className={`text-center mb-48 fade-in ${v3?"visible":""}`}>
+            <h2 className="heading-lg" style={{ marginBottom:8 }}>{t.about.team}</h2>
+          </div>
+          <div className="grid-3">
+            {team.map((m,i)=>(
+              <div key={i} className={`team-card fade-in fade-in-delay-${i+1} ${v3?"visible":""}`}>
+                <div className="team-avatar">{m.emoji}</div>
+                <h4 style={{ fontFamily:"Syne,Tajawal,sans-serif", fontWeight:700, fontSize:16 }}>{m.name}</h4>
+                <p style={{ color:GOLD, fontSize:13, marginTop:4 }}>{m.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <FinalCTA lang={lang} onCTA={onCTA}/>
+    </>
+  );
+}
+
+// ── SERVICES PAGE ──────────────────────────────
+function ServicesPage({ lang, onCTA }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  return (
+    <>
+      <section className="page-hero">
+        <div className="container">
+          <span className="section-tag">✦ {lang==="ar"?"كل ما نقدمه":"Full Offerings"}</span>
+          <h1 className="heading-xl" style={{ marginBottom:16 }}>{t.servicesPage.title}</h1>
+          <p style={{ color:"var(--muted)", fontSize:"clamp(15px,2vw,19px)", maxWidth:540, margin:"0 auto" }}>{t.servicesPage.sub}</p>
+        </div>
+      </section>
+      <section className="section" ref={ref}>
+        <div className="container">
+          <div style={{ display:"flex", flexDirection:"column", gap:28 }}>
+            {t.servicesPage.services.map((svc,i)=>(
+              <div key={i} className={`service-detail-card fade-in fade-in-delay-${(i%2)+1} ${visible?"visible":""}`}>
+                <div className="service-detail-header">
+                  <div className="flex items-center" style={{ gap:14, marginBottom:14 }}>
+                    <div style={{ width:52, height:52, borderRadius:12, background:"rgba(29,168,200,0.1)", border:"1px solid rgba(29,168,200,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{SERVICE_ICONS[i]}</div>
+                    <h3 style={{ fontFamily:"Syne,Tajawal,sans-serif", fontSize:"clamp(18px,2.5vw,24px)", fontWeight:700 }}>{svc.title}</h3>
+                  </div>
+                  <p style={{ color:"var(--muted)", fontSize:15, lineHeight:1.7, maxWidth:600 }}>{svc.desc}</p>
+                </div>
+                <div className="service-detail-body">
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:0, marginBottom:24 }}>
+                    {svc.benefits.map((b,j)=>(
+                      <div key={j} className="benefit-item"><span className="benefit-check">✦</span><span style={{ fontSize:14, color:"rgba(232,244,248,0.8)" }}>{b}</span></div>
+                    ))}
+                  </div>
+                  <button className="btn-gold" onClick={onCTA}>{t.servicesPage.cta}</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+// ── CONTACT PAGE ───────────────────────────────
+function ContactPage({ lang, onCTA }) {
+  const t = T[lang];
+  const [ref,visible] = useInView();
+  const [form,setForm] = useState({name:"",email:"",msg:""});
+  const [sent,setSent] = useState(false);
+  const handleSubmit = () => {
+    if(form.name&&form.email&&form.msg){
+      const subject=encodeURIComponent(`Contact from ${form.name}`);
+      const body=encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.msg}`);
+      window.location.href=`mailto:info.tradly@gmail.com?subject=${subject}&body=${body}`;
+      setSent(true); setForm({name:"",email:"",msg:""}); setTimeout(()=>setSent(false),4000);
+    }
+  };
+  return (
+    <>
+      <section className="page-hero">
+        <div className="container">
+          <span className="section-tag">✦ {lang==="ar"?"تواصل":"Contact"}</span>
+          <h1 className="heading-xl" style={{ marginBottom:16 }}>{t.contact.title}</h1>
+          <p style={{ color:"var(--muted)", fontSize:"clamp(15px,2vw,19px)", maxWidth:540, margin:"0 auto" }}>{t.contact.sub}</p>
+        </div>
+      </section>
+      <section className="section" ref={ref}>
+        <div className="container">
+          <div className="grid-2" style={{ gap:48, alignItems:"start" }}>
+            <div className={`fade-in ${visible?"visible":""}`}>
+              <div className="card">
+                <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
+                  <div><label>{t.contact.name}</label><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder={t.contact.name}/></div>
+                  <div><label>{t.contact.email}</label><input value={form.email} onChange={e=>setForm({...form,email:e.target.value})} placeholder="hello@example.com" type="email"/></div>
+                  <div><label>{t.contact.msg}</label><textarea value={form.msg} onChange={e=>setForm({...form,msg:e.target.value})} placeholder={t.contact.msg}/></div>
+                  <button className="btn-gold" onClick={handleSubmit} style={{ width:"100%" }}>{t.contact.send}</button>
+                  {sent&&<div style={{ color:GOLD2, fontSize:14, textAlign:"center" }}>✓ {lang==="ar"?"تم الإرسال! سنتواصل معك قريباً.":"Sent! We'll reach out soon."}</div>}
+                </div>
+              </div>
+            </div>
+            <div className={`fade-in fade-in-delay-2 ${visible?"visible":""}`}>
+              <p style={{ color:"var(--muted)", marginBottom:28, fontSize:15 }}>{t.contact.or}</p>
+              <a href="https://wa.me/201558560991" target="_blank" rel="noreferrer" style={{ display:"flex", alignItems:"center", gap:14, background:"rgba(37,211,102,0.08)", border:"1px solid rgba(37,211,102,0.2)", borderRadius:14, padding:"18px 22px", textDecoration:"none", marginBottom:20 }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                <div>
+                  <div style={{ fontWeight:700, color:"#25D366", fontFamily:"Syne,Tajawal,sans-serif", fontSize:15 }}>{t.contact.whatsapp}</div>
+                  <div style={{ fontSize:13, color:"var(--muted)", marginTop:2 }}>+20 155 856 0991</div>
+                </div>
+              </a>
+              <div style={{ display:"flex", gap:12, marginBottom:28, flexWrap:"wrap" }}>
+                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="social-btn" style={{ background:"rgba(225,48,108,0.08)", borderColor:"rgba(225,48,108,0.25)", color:"#e1306c" }}>
+                  <InstagramIcon/> Instagram
+                </a>
+                <a href="https://tiktok.com" target="_blank" rel="noreferrer" className="social-btn" style={{ background:"rgba(255,255,255,0.05)", borderColor:"rgba(255,255,255,0.15)", color:"var(--text)" }}>
+                  <TikTokIcon/> TikTok
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="social-btn" style={{ background:"rgba(10,102,194,0.1)", borderColor:"rgba(10,102,194,0.3)", color:"#0a66c2" }}>
+                  <LinkedInIcon/> LinkedIn
+                </a>
+              </div>
+              <div className="map-placeholder">📍 {lang==="ar"?"القاهرة، مصر":"Cairo, Egypt"}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+// ── FOOTER ─────────────────────────────────────
+function Footer({ setPage, lang }) {
+  const t = T[lang];
+  return (
+    <footer style={{ borderTop:`1px solid ${BORDER}`, padding:"clamp(40px,6vw,60px) 0 32px" }}>
+      <div className="container">
+        <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:32, marginBottom:40 }}>
+          <div>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
+              <TCLogo id="tcFoot" size={34}/>
+              <span style={{ fontFamily:"Syne,Tajawal,sans-serif", fontWeight:800, fontSize:20, background:"linear-gradient(135deg,#1DA8C8,#40E0C0)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>Tradly</span>
+            </div>
+            <p style={{ color:"var(--muted)", fontSize:13, maxWidth:240, lineHeight:1.7 }}>{t.footer.tagline}</p>
+          </div>
+          <div style={{ display:"flex", gap:28, flexWrap:"wrap", alignItems:"flex-start" }}>
+            {[["home",t.nav.home],["about",t.nav.about],["services",t.nav.services],["contact",t.nav.contact]].map(([k,l])=>(
+              <span key={k} className="nav-link" onClick={()=>setPage(k)} style={{ cursor:"pointer" }}>{l}</span>
+            ))}
+          </div>
+        </div>
+        <div style={{ borderTop:`1px solid ${BORDER}`, paddingTop:20, display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:12, alignItems:"center" }}>
+          <p style={{ fontSize:13, color:"var(--muted)" }}>© 2025 Tradly. {t.footer.rights}</p>
+          <div style={{ display:"flex", gap:14 }}>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" style={{ color:"#e1306c", opacity:0.8, transition:"opacity .2s" }}><InstagramIcon/></a>
+            <a href="https://tiktok.com" target="_blank" rel="noreferrer" style={{ color:"var(--text)", opacity:0.8, transition:"opacity .2s" }}><TikTokIcon/></a>
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" style={{ color:"#0a66c2", opacity:0.8, transition:"opacity .2s" }}><LinkedInIcon/></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ── WHATSAPP WIDGET ────────────────────────────
+function WhatsAppWidget() {
+  return (
+    <a href="https://wa.me/201558560991" target="_blank" rel="noreferrer" className="whatsapp-widget">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+  );
+}
+
+// ── APP ────────────────────────────────────────
+function App() {
+  const [lang, setLang] = useState("en");
+  const [page, setPage] = useState("home");
+  const [reviews] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const dir = lang==="ar"?"rtl":"ltr";
+
+  useEffect(()=>{ window.scrollTo({top:0,behavior:"smooth"}); },[page]);
+
+  const setLangWithDir = (l) => {
+    setLang(l);
+    document.documentElement.setAttribute("dir",l==="ar"?"rtl":"ltr");
+  };
+
+  const openCTA = () => setShowModal(true);
+
+  return (
+    <LangContext.Provider value={{lang,t:T[lang]}}>
+      <div dir={dir} className="grain-overlay" style={{ minHeight:"100vh", fontFamily:lang==="ar"?"Tajawal,sans-serif":"DM Sans,sans-serif" }}>
+        <Navbar page={page} setPage={setPage} lang={lang} setLang={setLangWithDir} onCTA={openCTA}/>
+        {page==="home"&&<HomePage setPage={setPage} lang={lang} reviews={reviews} onCTA={openCTA}/>}
+        {page==="about"&&<AboutPage lang={lang} onCTA={openCTA}/>}
+        {page==="services"&&<ServicesPage lang={lang} onCTA={openCTA}/>}
+        {page==="contact"&&<ContactPage lang={lang} onCTA={openCTA}/>}
+        {page!=="login"&&page!=="dashboard"&&<Footer setPage={setPage} lang={lang}/>}
+        <WhatsAppWidget/>
+        {showModal&&<ContactModal lang={lang} onClose={()=>setShowModal(false)}/>}
+      </div>
+    </LangContext.Provider>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
