@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -182,7 +182,7 @@ const T = {
     services: {
       title:"What We Do", sub:"Four pillars of growth, engineered for your business.",
       s1t:"Marketing Consultation", s1d:"Deep-dive strategy sessions that expose gaps and unlock your next growth phase.",
-      s2t:"Full Marketing Plan", s2d:"An end-to-end roadmap — from brand positioning to channel mix to content calendar.",
+      s2t:"Create an online store", s2d:"We create a complete, professional online store with linking shipping and payment methods",
       s3t:"Store & Social Analysis", s3d:"Forensic audit of your digital presence: what's working, what's leaking, what's next.",
       s4t:"Marketing & Logistics Agents", s4d:"Embedded execution teams that run campaigns, manage vendors, and report weekly.",
       learnMore:"Learn More →",
@@ -242,7 +242,7 @@ const T = {
     services:{
       title:"ماذا نفعل", sub:"أربعة محاور للنمو، مصممة لعملك.",
       s1t:"استشارة تسويقية", s1d:"جلسات استراتيجية معمّقة تكشف الثغرات وتفتح مرحلة النمو التالية.",
-      s2t:"خطة تسويقية متكاملة", s2d:"خارطة طريق شاملة — من تحديد المكانة التنافسية إلى مزيج القنوات والجدول التحريري.",
+      s2t:"انشاء متجر الكترونى ", s2d:"ننشأ متجر الكتروني كامل احترافي  مع ربط وسائل الشحن و الدفع ",
       s3t:"تحليل المتجر والسوشيال", s3d:"تدقيق جنائي لحضورك الرقمي: ما يعمل، ما يتسرب، ما هو التالي.",
       s4t:"وكلاء تسويق ولوجستيات", s4d:"فرق تنفيذية مدمجة تدير الحملات والموردين وتقدم تقارير أسبوعية.",
       learnMore:"اعرف أكثر →",
@@ -276,7 +276,7 @@ const T = {
 };
 
 const GOLD="#1DA8C8", GOLD2="#40E0C0", BG="#0A0F1A", CARD="#0D1525", BORDER="#1A2640";
-const SERVICE_ICONS=["📊","🗺️","🔍","🤝"];
+const SERVICE_ICONS=["📊","🚀","🔍","🤝"];
 const PROCESS_ICONS=["🔬","🏗️","🚀","📈"];
 
 function useInView(threshold=0.12){
@@ -660,7 +660,7 @@ function AboutPage({ lang, onCTA }) {
   const t = T[lang];
   const [ref1,v1]=useInView(),[ref2,v2]=useInView(),[ref3,v3]=useInView();
   const team=[
-    {emoji:"👨‍💼",name:lang==="ar"?"محمد العتيبي":"Mohammed Al-Otaibi",role:lang==="ar"?"المؤسس والرئيس التنفيذي":"Founder & CEO"},
+    {emoji:"👨‍💼",name:lang==="ar"?"محمد جمال":"Mohammed Al-Otaibi",role:lang==="ar"?"المؤسس والرئيس التنفيذي":"Founder & CEO"},
     {emoji:"👩‍💻",name:lang==="ar"?"سارة الحارثي":"Sara Al-Harthi",role:lang==="ar"?"مديرة الاستراتيجية":"Head of Strategy"},
     {emoji:"👨‍🎨",name:lang==="ar"?"عمر الشمري":"Omar Al-Shammari",role:lang==="ar"?"مدير الإبداع":"Creative Director"},
   ];
